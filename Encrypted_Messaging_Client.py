@@ -10,6 +10,7 @@ server_addr = "127.0.0.1"
 s.connect((server_addr, port))
 
 print(s.recv(1024).decode())
+s.send(input().encode())
+while True: print(s.recv(1024).decode())
 
-s.close()
 
