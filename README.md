@@ -9,3 +9,5 @@
 ### Create GUI for messaging app
 
 ### Encrypt data
+
+## Details about the app
