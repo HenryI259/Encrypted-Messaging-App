@@ -1,13 +1,11 @@
-import glob
 import socket
 import threading
 
-# Client side for bob
 
 server = socket.socket()
 
 port = 10000
-server_addr = "127.0.0.1"
+server_addr = "10.205.156.161"
 
 server.connect((server_addr, port))
 

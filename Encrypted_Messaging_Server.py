@@ -18,6 +18,7 @@ lock = threading.Lock()
 
 def handle_client(client, addr):
     try:
+        print(f"User at address {addr} is attempting to connect to the server.")
         username = client.recv(1024).decode().strip()
         
         with lock:
@@ -32,6 +33,7 @@ def handle_client(client, addr):
             
             connected_users[username] = client
 
+        print(f"{username} has connected to the server.")
         reciever = "Bob" if username=="Alice" else "Alice"
         
         while True:
