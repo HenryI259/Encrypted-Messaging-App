@@ -36,9 +36,8 @@ def recieve():
             return
         
 def send():
-    global entry
     message = entry.get()
-    if connected:
+    if connected and message.strip() != "":
         server.send(message.encode())
         message_area.config(state="normal")
         message_area.insert(tk.END, message+"\n", "sent")
@@ -47,8 +46,9 @@ def send():
     entry.delete(0, "end")
 
 
-username = "Bob"#input("Please enter your username: ")
-server.send(username.encode())
+
+#username = "Bob"#input("Please enter your username: ")
+#server.send(username.encode())
 
 threading.Thread(target=recieve).start()
 

@@ -19,19 +19,19 @@ lock = threading.Lock()
 def handle_client(client, addr):
     try:
         print(f"User at address {addr} is attempting to connect to the server.")
-        username = client.recv(1024).decode().strip()
         
-        with lock:
-            if username not in usernames:
-                client.send("Server:This username is not available.".encode())
-                client.close()
-                return
-            elif username in connected_users:
-                client.send("Server:This user is already connected.".encode())
-                client.close()
-                return
+        username = "user"
+        while username and not (username in usernames and username not in connected_users):
+            username = client.recv(1024).decode().strip()
+        
+            with lock:
+                if username not in usernames:
+                    client.send("Server:This username is not available.".encode())
+                    
+                elif username in connected_users:
+                    client.send("Server:This user is already connected.".encode())
             
-            connected_users[username] = client
+        connected_users[username] = client
 
         print(f"{username} has connected to the server.")
         reciever = usernames[0] if username==usernames[1] else usernames[1]
