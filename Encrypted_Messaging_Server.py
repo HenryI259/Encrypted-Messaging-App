@@ -30,7 +30,8 @@ def handle_client(client, addr):
                     
                 elif username in connected_users:
                     client.send("Server:This user is already connected.".encode())
-            
+           
+        client.send("Server:Success".encode())
         connected_users[username] = client
 
         print(f"{username} has connected to the server.")
