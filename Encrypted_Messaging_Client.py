@@ -6,7 +6,7 @@ from tkinter import scrolledtext
 server = socket.socket()
 
 port = 10000
-server_addr = "10.205.227.129"
+server_addr = "127.0.0.1"
 
 server.connect((server_addr, port))
 
