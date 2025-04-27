@@ -1,3 +1,4 @@
+from ast import Lambda
 import socket
 import threading
 import tkinter as tk
@@ -15,6 +16,7 @@ state = "login"
 
 def recieve():
     global connected
+    global state
     while True:
         try:
             message = server.recv(1024).decode()
@@ -30,7 +32,8 @@ def recieve():
                     chat_frame.show_frame()
                 else:
                     login_frame.entry.delete(0, "end")
-                    login_frame.text_box.delete("28.0", "end")
+                    login_frame.text_box.delete("1.0", "end")
+                    login_frame.text_box.insert("1.0", "Please enter your username.\n")
                     login_frame.text_box.insert("end", text)
             elif state == "chat":
                 chat_frame.message_area.config(state="normal")
@@ -45,7 +48,7 @@ def recieve():
             connected = False
             return
         
-def send_username():
+def send_username(login_frame):
     message = login_frame.entry.get()
     if connected and message.strip() != "":
         server.send(message.encode())
@@ -70,13 +73,14 @@ class AppFrame(tk.Frame):
 class LoginFrame(AppFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.text_box = tk.Text(self, width=30, height=5)
+        self.text_box = tk.Text(self, width=50, height=2)
         self.text_box.insert("1.0", "Please enter your username.\n")
+        self.text_box.pack()
         
         self.entry = tk.Entry(self, width=50)
         self.entry.pack()
 
-        self.submit_button = tk.Button(self, text="Submit", command=send_username())
+        self.submit_button = tk.Button(self, text="Submit", command= lambda : send_username(self))
         self.submit_button.pack()
 
         
@@ -97,8 +101,8 @@ class ChatFrame(AppFrame):
         self.send_button.pack()
     
 
-username = "Bob"#input("Please enter your username: ")
-server.send(username.encode())
+#username = "Bob"#input("Please enter your username: ")
+#server.send(username.encode())
 
 threading.Thread(target=recieve).start()
 
