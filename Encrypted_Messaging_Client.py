@@ -6,7 +6,7 @@ from tkinter import scrolledtext
 server = socket.socket()
 
 port = 10000
-server_addr = "127.0.0.1"
+server_addr = "10.205.227.129"
 
 server.connect((server_addr, port))
 
@@ -25,9 +25,9 @@ def recieve():
             sender, text = message.split(":", 1)
             message_area.config(state="normal")
             if sender == "Server":
-                message_area.insert(tk.END, text, "server")
+                message_area.insert(tk.END, text+"\n", "server")
             else:
-                message_area.insert(tk.END, text, "recieved")
+                message_area.insert(tk.END, text+"\n", "recieved")
             message_area.yview(tk.END)
             message_area.config(state="disabled")
         except Exception as e:
@@ -41,13 +41,13 @@ def send():
     if connected:
         server.send(message.encode())
         message_area.config(state="normal")
-        message_area.insert(tk.END, message, "sent")
+        message_area.insert(tk.END, message+"\n", "sent")
         message_area.yview(tk.END)
         message_area.config(state="disabled")
     entry.delete(0, "end")
 
 
-username = "Alice"#input("Please enter your username: ")
+username = "Bob"#input("Please enter your username: ")
 server.send(username.encode())
 
 threading.Thread(target=recieve).start()
