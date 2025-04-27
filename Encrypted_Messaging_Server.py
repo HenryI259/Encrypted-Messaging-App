@@ -23,29 +23,29 @@ def handle_client(client, addr):
         
         with lock:
             if username not in usernames:
-                client.send("This username is not available.".encode())
+                client.send("Server:This username is not available.".encode())
                 client.close()
                 return
             elif username in connected_users:
-                client.send("This user is already connected.".encode())
+                client.send("Server:This user is already connected.".encode())
                 client.close()
                 return
             
             connected_users[username] = client
 
         print(f"{username} has connected to the server.")
-        reciever = "Bob" if username=="Alice" else "Alice"
+        reciever = username[0] if username==username[1] else username[0]
         
         while True:
-            message = client.recv(1024)
+            message = client.recv(1024).decode()
             if not message:
                 break
             with lock:
                 if reciever in connected_users:
-                    connected_users[reciever].send(message)
+                    connected_users[reciever].send(f"{username}:{message}".encode())
                     print(f"{username} sent {reciever} a message")
                 else:
-                    client.send(f"{reciever} is not connected at this time.".encode())
+                    client.send(f"Server:{reciever} is not connected at this time.".encode())
 
     except Exception as e:
         if username in locals():
