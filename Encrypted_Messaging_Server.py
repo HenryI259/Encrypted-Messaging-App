@@ -34,7 +34,7 @@ def handle_client(client, addr):
             connected_users[username] = client
 
         print(f"{username} has connected to the server.")
-        reciever = usernames[0] if username==usernames[1] else usernames[0]
+        reciever = usernames[0] if username==usernames[1] else usernames[1]
         
         while True:
             message = client.recv(1024).decode()
