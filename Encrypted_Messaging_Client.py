@@ -23,13 +23,13 @@ def recieve():
                 return
             print(f"{message}")
             sender, text = message.split(":", 1)
-            message_area.config(state='normal')
+            message_area.config(state="normal")
             if sender == "Server":
-                message_area.insert(tk.END, text, 'server')
+                message_area.insert(tk.END, text, "server")
             else:
-                message_area.insert(tk.END, text, 'recieved')
+                message_area.insert(tk.END, text, "recieved")
             message_area.yview(tk.END)
-            message.area.config(state="disabled")
+            message_area.config(state="disabled")
         except Exception as e:
             print(f"Connection lost due to error: {e}")
             connected = False
@@ -40,8 +40,8 @@ def send():
     message = entry.get()
     if connected:
         server.send(message.encode())
-        message_area.config(state='normal')
-        message_area.insert(tk.END, message, 'sent')
+        message_area.config(state="normal")
+        message_area.insert(tk.END, message, "sent")
         message_area.yview(tk.END)
         message_area.config(state="disabled")
     entry.delete(0, "end")
