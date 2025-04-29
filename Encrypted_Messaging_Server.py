@@ -45,6 +45,7 @@ def handle_client(client, addr):
 
         print(f"{username} has connected to the server.")
         reciever = usernames[0] if username==usernames[1] else usernames[1]
+        connected_users[reciever].send(bytes_to_message("Server", f"{username} has connected."))
         
         while True:
             message = client.recv(1024)
@@ -67,6 +68,8 @@ def handle_client(client, addr):
             if "username" in locals() and username in connected_users:
                 del connected_users[username]
                 print(f"{username} has disconnected from the server.")
+                if "reciever" in locals() and reciever in connected_users:
+                    connected_users[reciever].send(bytes_to_message("Server", f"{username} has disconnected."))
             else:
                 print(f"User at address {addr} has disconnected from the server.")
             client.close()

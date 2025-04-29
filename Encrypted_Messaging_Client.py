@@ -10,7 +10,7 @@ import hashlib
 server = socket.socket()
 
 port = 10000
-server_addr = "127.0.0.1"
+server_addr = "10.205.227.129"
 
 server.connect((server_addr, port))
 
@@ -43,7 +43,7 @@ def decrypt(IVciphertext):
 
     cipher_object = AES.new(hashed_key, AES.MODE_CBC, iv)
     plaintext = cipher_object.decrypt(ciphertext)
-
+    
     return plaintext[:-plaintext[-1]].decode()
 
 def recieve():
@@ -77,7 +77,11 @@ def recieve():
                     chat_frame.decrypted_message_area.insert(tk.END, text+"\n", "server")
                 else:
                     chat_frame.message_area.insert(tk.END, text.hex()+"\n", "recieved")
-                    chat_frame.decrypted_message_area.insert(tk.END, decrypt(text)+"\n", "recieved")
+                    text = decrypt(text)
+                    if text == "":
+                        chat_frame.decrypted_message_area.insert(tk.END, "Your keys do not match.\n", "server")
+                    else:
+                        chat_frame.decrypted_message_area.insert(tk.END, text+"\n", "recieved")
                 chat_frame.message_area.yview(tk.END)
                 chat_frame.message_area.config(state="disabled")
                 chat_frame.decrypted_message_area.yview(tk.END)
