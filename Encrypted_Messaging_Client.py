@@ -73,7 +73,6 @@ def recieve():
                 chat_frame.decrypted_message_area.config(state="normal")
                 if sender == "Server":
                     text = text.decode()
-                    chat_frame.message_area.insert(tk.END, text+"\n", "server")
                     chat_frame.decrypted_message_area.insert(tk.END, text+"\n", "server")
                 else:
                     chat_frame.message_area.insert(tk.END, text.hex()+"\n", "recieved")
