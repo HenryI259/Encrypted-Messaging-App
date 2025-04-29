@@ -10,11 +10,18 @@ port = 10000
 
 # List of valid usernames
 usernames = ["Alice", "Bob"]
+max_username_length = 16
 
 # Dictionary with pairs (name: client)
 connected_users = {}
 
 lock = threading.Lock()
+
+def bytes_to_message(sender, message):
+    padding_length = max_username_length - len(sender)
+    padding = bytes([0]*padding_length)
+    padded_sender = sender.encode()+padding
+    return padded_sender+message
 
 def handle_client(client, addr):
     try:
@@ -26,27 +33,29 @@ def handle_client(client, addr):
         
             with lock:
                 if username not in usernames:
-                    client.send("Server:This username is not available.".encode())
+                    client.send(bytes_to_message("Server", "This username is not available.".encode()))
+                    print("1")
                     
                 elif username in connected_users:
-                    client.send("Server:This user is already connected.".encode())
+                    client.send(bytes_to_message("Server", "This user is already connected.".encode()))
+                    print("2")
            
-        client.send("Server:Success".encode())
+        client.send(bytes_to_message("Server", "Success".encode()))
         connected_users[username] = client
 
         print(f"{username} has connected to the server.")
         reciever = usernames[0] if username==usernames[1] else usernames[1]
         
         while True:
-            message = client.recv(1024).decode()
+            message = client.recv(1024)
             if not message:
                 break
             with lock:
                 if reciever in connected_users:
-                    connected_users[reciever].send(f"{username}:{message}".encode())
+                    connected_users[reciever].send(bytes_to_message(username, message))
                     print(f"{username} sent {reciever} a message")
                 else:
-                    client.send(f"Server:{reciever} is not connected at this time.".encode())
+                    client.send(bytes_to_message("Server", f"{reciever} is not connected at this time.".encode()))
 
     except Exception as e:
         if username in locals():
