@@ -34,18 +34,17 @@ def handle_client(client, addr):
             with lock:
                 if username not in usernames:
                     client.send(bytes_to_message("Server", "This username is not available.".encode()))
-                    print("1")
                     
                 elif username in connected_users:
                     client.send(bytes_to_message("Server", "This user is already connected.".encode()))
-                    print("2")
            
         client.send(bytes_to_message("Server", "Success".encode()))
         connected_users[username] = client
 
         print(f"{username} has connected to the server.")
         reciever = usernames[0] if username==usernames[1] else usernames[1]
-        connected_users[reciever].send(bytes_to_message("Server", f"{username} has connected."))
+        if reciever in connected_users:
+            connected_users[reciever].send(bytes_to_message("Server", f"{username} has connected.".encode()))
         
         while True:
             message = client.recv(1024)
@@ -69,7 +68,7 @@ def handle_client(client, addr):
                 del connected_users[username]
                 print(f"{username} has disconnected from the server.")
                 if "reciever" in locals() and reciever in connected_users:
-                    connected_users[reciever].send(bytes_to_message("Server", f"{username} has disconnected."))
+                    connected_users[reciever].send(bytes_to_message("Server", f"{username} has disconnected.".encode()))
             else:
                 print(f"User at address {addr} has disconnected from the server.")
             client.close()
