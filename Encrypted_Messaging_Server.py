@@ -72,9 +72,9 @@ def handle_client(client, addr):
     # Catches all exceptions and logs them
     except Exception as e:
         if username in locals():
-            print(f"User {username} has experienced an error: {e}")
+            print(f"User {username} has experienced an error: {e}.")
         else:
-            print(f"User at address {addr} has experienced an error: {e}")
+            print(f"User at address {addr} has experienced an error: {e}.")
     # Ensures everything is closed properly
     finally:
         with lock:
