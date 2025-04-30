@@ -115,9 +115,11 @@ def recieve():
                     chat_frame.show_frame()
                 else:
                     login_frame.entry.delete(0, "end")
+                    login_frame.text_box.config(state="normal")
                     login_frame.text_box.delete("1.0", "end")
                     login_frame.text_box.insert("1.0", "Please enter your username.\n", "center")
-                    login_frame.text_box.insert("end", text, "center")
+                    login_frame.text_box.insert("end", text, "center-warning")
+                    login_frame.text_box.config(state="disabled")
             elif state == "chat":
                 chat_frame.ciphertext_area.config(state="normal")
                 chat_frame.message_area.config(state="normal")
@@ -137,7 +139,13 @@ def recieve():
                 chat_frame.message_area.yview(tk.END)
                 chat_frame.message_area.config(state="disabled")
         except Exception as e:
+            chat_frame.message_area.config(state="normal")
+            chat_frame.message_area.insert(tk.END, "Connection to server has been lost.\n", "server-warning")
+            chat_frame.message_area.yview(tk.END)
+            chat_frame.message_area.config(state="disabled")
+            chat_frame.send_button.configure(text="Reload", command=lambda: reload(chat_frame))
             print(f"Connection lost due to: {e}")
+            server.close()
             connected = False
             return
         
@@ -162,7 +170,7 @@ def send_chat(chat_frame):
     if connected and message.strip() != "":
         if key == "":
             chat_frame.message_area.config(state="normal")
-            chat_frame.message_area.insert(tk.END, "Please input a key.\n", "server")
+            chat_frame.message_area.insert(tk.END, "Please input a key.\n", "server-warning")
             chat_frame.message_area.yview(tk.END)
             chat_frame.message_area.config(state="disabled")
         else:
@@ -179,6 +187,35 @@ def send_chat(chat_frame):
             messages.append((encrypted_message, int(time.time() / 1000), "sent"))
     chat_frame.entry.delete(0, "end")
     
+def reload(chat_frame):
+    global connected
+    global server
+    try:
+        server = socket.socket()
+        server.connect((server_addr, port))
+        server.send(username.encode())
+        if server.recv(1024)[16:].decode() == "Success":
+            threading.Thread(target=recieve, daemon=True).start()
+            chat_frame.message_area.config(state="normal")
+            chat_frame.message_area.insert(tk.END, "Reconnected to server.\n", "server")
+            chat_frame.message_area.yview(tk.END)
+            chat_frame.message_area.config(state="disabled")
+            chat_frame.send_button.configure(text="Send", command= lambda: send_chat(chat_frame))
+            connected = True
+        else:
+            chat_frame.message_area.config(state="normal")
+            chat_frame.message_area.insert(tk.END, "Reconnect failed.\n", "server-warning")
+            chat_frame.message_area.yview(tk.END)
+            chat_frame.message_area.config(state="disabled")
+            server.close()
+    except Exception as e:
+        print(f"Failed to connect due to error: {e}")
+        chat_frame.message_area.config(state="normal")
+        chat_frame.message_area.insert(tk.END, "Reconnect failed.\n", "server-warning")
+        chat_frame.message_area.yview(tk.END)
+        chat_frame.message_area.config(state="disabled")
+        server.close()
+
 def close():
     if state == "chat":
         save_messages()
@@ -197,7 +234,9 @@ class LoginFrame(AppFrame):
         super().__init__(*args, **kwargs)
         self.text_box = tk.Text(self, width=35, height=2)
         self.text_box.tag_configure("center", justify="center")
+        self.text_box.tag_configure("center-warning", justify="center", foreground="red")
         self.text_box.insert("1.0", "Please enter your username.\n", "center")
+        self.text_box.config(state="disabled")
         self.text_box.configure(foreground=main_text_color, bg=text_background_color)
         self.text_box.pack(pady=(150, 0))
         
@@ -243,6 +282,7 @@ class ChatFrame(AppFrame):
         self.message_area.tag_configure("sent", justify="right")
         self.message_area.tag_configure("sent-warning", justify="right", foreground="red")
         self.message_area.tag_configure("server", justify="center")
+        self.message_area.tag_configure("server-warning", justify="center", foreground="red")
         self.message_area.config(state="disabled")
         self.message_area.configure(foreground=main_text_color, bg=text_background_color)
         self.message_area.pack()
