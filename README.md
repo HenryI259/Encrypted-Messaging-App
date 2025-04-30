@@ -8,7 +8,7 @@ This project works to implement a P2P Messaging App with a focus on encryption. 
 * The modified password is hashed with the SHA256 hash function. This will allow the key to always be 256 bits in length no matter what password is used. This length of key will be long enough to prevent any current brute force attacks. Furthermore, this will allow the changing time appended on the end to change the entire key. This final result will be used for encryption
 
 ### Symetric Key Encryption
-* All messages will be encrypted with AES encryption using the key described above. Once encrypted they will be sent to the server where they will then be routed to the correct client. Since the keys are stored locally, even if an attacker got access to the server, they would still not be able to observe what the messages are.
+* All messages will be encrypted with AES encryption using the key described above. Before encryption, messages are padded with bytes describing the length of the padding. This value will be used during decryption to remove the correct amount of padding. Once encrypted they will be sent to the server where they will then be routed to the correct client. Since the keys are stored locally, even if an attacker got access to the server, they would still not be able to observe what the messages are.
 * Messages will be encrypted in CBC (Cipher Block Chaining) mode. This allows similar messages to have very different ciphertexts. For example Bob could send Alice "ok" multiple times but an attacker would be unable to observe this. The IV that is used for encryption will be appended to the beginning of the ciphertext to be used for decryption.
 
 ## Benefits Of The Design
