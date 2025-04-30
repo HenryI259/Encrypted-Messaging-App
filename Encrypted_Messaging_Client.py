@@ -17,11 +17,6 @@ server = socket.socket()
 port = 10000
 server_addr = "10.205.227.129"
 
-# Connect to the server
-server.connect((server_addr, port))
-
-print(f"Connected to server at address {server_addr}.")
-
 max_username_length = 16
 
 # State for the client
@@ -249,6 +244,7 @@ def reload_login(login_frame):
         server = socket.socket()
         server.settimeout(5)
         server.connect((server_addr, port))
+        server.settimeout(None)
         # Creates a new thread if connection is successful
         threading.Thread(target=recieve, daemon=True).start()
         login_frame.entry.delete(0, "end")
@@ -258,6 +254,7 @@ def reload_login(login_frame):
         login_frame.text_box.config(state="disabled")
         login_frame.submit_button.configure(text="Submit", command=lambda: send_username(login_frame))
         connected = True
+        print("Reconnect success.")
     # Catches all exceptions and alerts the user
     except Exception as e:
         print(f"Failed to connect due to error: {e}")
@@ -279,6 +276,7 @@ def reload_chat(chat_frame):
         server = socket.socket()
         server.settimeout(5)
         server.connect((server_addr, port))
+        server.settimeout(None)
         # Sends username and connects if the server responses with success
         server.send(username.encode())
         if server.recv(1024)[max_username_length:].decode() == "Success":
@@ -289,6 +287,7 @@ def reload_chat(chat_frame):
             chat_frame.message_area.config(state="disabled")
             chat_frame.send_button.configure(text="Send", command= lambda: send_chat(chat_frame))
             connected = True
+            print("Reconnect success.")
         # Prompts the user of the failure if the user has already logged in on a different machine
         else:
             print("Server rejected username. Check if you are logged in on another device.")
@@ -393,11 +392,6 @@ class ChatFrame(AppFrame):
         self.send_button.configure(foreground=main_text_color, bg=text_background_color)
         self.send_button.pack()
 
-# Creates new thread for recieveing messages
-# Daemon causes the thread to close if the main program is closed
-print("Creating thread.")
-threading.Thread(target=recieve, daemon=True).start()
-
 # Colors for the app
 background_color = "#101010"
 text_background_color = "#202020"
@@ -428,6 +422,29 @@ chat_frame.configure(bg=background_color)
 chat_frame.place(in_=main_container, x=0, y=0, relwidth=1, relheight=1)
 
 login_frame.show_frame()
+
+# Connect to the server
+print(f"Connecting to server at address {server_addr}.")
+try:
+    server.settimeout(5)
+    server.connect((server_addr, port))
+    server.settimeout(None)
+    # Creates new thread for recieveing messages
+    # Daemon causes the thread to close if the main program is closed
+    print("Creating thread.")
+    threading.Thread(target=recieve, daemon=True).start()
+except:
+    login_frame.entry.delete(0, "end")
+    login_frame.text_box.config(state="normal")
+    login_frame.text_box.delete("1.0", "end")
+    login_frame.text_box.insert("1.0", "Please enter your username.\n", "center")
+    login_frame.text_box.insert("end", "Could not connect to server.", "center-warning")
+    login_frame.text_box.config(state="disabled")
+    login_frame.submit_button.configure(text="Reload", command=lambda: reload_login(login_frame))
+    print("Connection failed.")
+    server.close()
+    connected = False
+
 
 # Main loop for GUI
 print("Starting main loop for root.")
