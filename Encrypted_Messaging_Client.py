@@ -38,7 +38,7 @@ def load_messages():
 
 # Saves all messages to a message file
 def save_messages():
-    print(f"Saving messages to {username}'s-message-file.pkl")
+    print(f"Saving messages to {username}'s-message-file.pkl.")
     with open(f"{username}'s-message-file.pkl", "wb") as file:
         pickle.dump(messages, file)
 
@@ -168,7 +168,7 @@ def recieve(logged_in=False):
                 chat_frame.message_area.config(state="disabled")
     # Catches all exceptions and logs them
     except Exception as e:
-        print(f"Connection lost due to: {e}")
+        print(f"Connection lost due to: {e}.")
     # Ensures everything closes properly
     finally:
         # Allows the user to reconnect if disconnected
@@ -257,7 +257,7 @@ def reload_login(login_frame):
         print("Reconnect success.")
     # Catches all exceptions and alerts the user
     except Exception as e:
-        print(f"Failed to connect due to error: {e}")
+        print(f"Failed to connect due to error: {e}.")
         login_frame.entry.delete(0, "end")
         login_frame.text_box.config(state="normal")
         login_frame.text_box.delete("1.0", "end")
@@ -298,7 +298,7 @@ def reload_chat(chat_frame):
             server.close()
     # Catches all exceptions and alerts the user
     except Exception as e:
-        print(f"Failed to connect due to error: {e}")
+        print(f"Failed to connect due to error: {e}.")
         chat_frame.message_area.config(state="normal")
         chat_frame.message_area.insert(tk.END, "Reconnect failed.\n", "server-warning")
         chat_frame.message_area.yview(tk.END)
