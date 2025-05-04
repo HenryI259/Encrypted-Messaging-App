@@ -15,7 +15,22 @@ server = socket.socket()
 
 # Port and IP address for the server
 port = 10000
-server_addr = "10.205.227.129"
+server_addr = ""
+
+# Resets the saved server address if the user wants to input a new one.
+if os.path.exists(f"server-addr.pkl") and input("Would you like to use the same server? (y/n): ") == "n":
+    os.remove("server-addr.pkl")
+
+# Gets the server address from a file if it exists. Otherwise it asks the user for the address.
+if os.path.exists(f"server-addr.pkl"):
+    print("Loading saved server address.")
+    with open("server-addr.pkl", "rb") as file:
+        server_addr = pickle.load(file)    
+else:
+    server_addr = input("Please input the address of the server: ")
+    print(f"Saving address to server-addr.pkl.")
+    with open("server-addr.pkl", "wb") as file:
+        pickle.dump(server_addr, file)
 
 max_username_length = 16
 
