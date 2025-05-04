@@ -100,8 +100,3 @@ print("Listening for a connection from Alice or Bob")
 while True:
     client, addr = s.accept()
     threading.Thread(target = handle_client, args=(client, addr)).start()
-    
-   
-# cd source\repos\Encrypted-Messaging-App
-# python Encrypted_Messaging_Server.py
-# python Encrypted_Messaging_Client.py
